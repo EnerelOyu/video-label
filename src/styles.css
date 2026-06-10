@@ -141,7 +141,11 @@ button.danger:hover { background: #85293a; }
   background: #000000;
   pointer-events: none;
   z-index: 4;
+<<<<<<< HEAD
   box-shadow: 0 0 6px rgba(0,0,0, 0.8);
+=======
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+>>>>>>> fa08fd3 (playhead ungu)
 }
 .axis {
   position: relative;
