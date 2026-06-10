@@ -160,8 +160,8 @@ export default function App() {
     setSelectedIndex((i) => Math.max(0, Math.min(i, segments.length - 2)))
   }
 
-  const addLabel = () => {
-    const name = newLabel.trim()
+  const addLabel = (label) => {
+    const name = (typeof label === 'string' ? label : newLabel).trim()
     if (!name) return
     if (!allLabels.includes(name)) setExtraLabels((p) => [...p, name])
     if (selectedIndex >= 0) changeLabel(selectedIndex, name)
@@ -310,17 +310,38 @@ export default function App() {
           <div className="editor-actions">
             <input
               className="new-label-input"
-              placeholder="Шинэ label нэр"
+              placeholder="Сонгох эсвэл шинэ label нэр бичих"
+              list="label-presets"
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addLabel()}
             />
-            <button onClick={addLabel}>+ Label нэмж онооx</button>
-            <button onClick={() => seek(sel.start_time)}>⤓ Эхлэл рүү seek</button>
-            <button onClick={splitAtPlayhead}>✂ Playhead дээр хуваах</button>
+            <datalist id="label-presets">
+              {Object.keys(KNOWN_COLORS).map((l) => (
+                <option key={l} value={l} />
+              ))}
+            </datalist>
+            <button onClick={addLabel}>+ Label нэмэх</button>
+            <button onClick={() => seek(sel.start_time)}>Segment-ын эхэнд очих</button>
+            <button onClick={splitAtPlayhead}>Segemnt-ыг хуваах</button>
             <button className="danger" onClick={() => deleteSegment(selectedIndex)}>
-              🗑 Устгах
+              Устгах
             </button>
+          </div>
+
+          <div className="label-presets">
+            <span className="label-presets-title">Нийтлэг сонголтууд:</span>
+            {Object.keys(KNOWN_COLORS).map((l) => (
+              <button
+                key={l}
+                type="button"
+                className={'preset-chip' + (sel.label === l ? ' active' : '')}
+                onClick={() => addLabel(l)}
+              >
+                <span className="swatch" style={{ background: colorMap[l] }} />
+                {l}
+              </button>
+            ))}
           </div>
 
           <div className="legend">

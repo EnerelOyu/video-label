@@ -195,6 +195,39 @@ button.danger:hover { background: #85293a; }
   align-items: center;
   margin-bottom: 14px;
 }
+.label-presets {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.label-presets-title {
+  font-size: 12px;
+  color: #8a90a0;
+  margin-right: 2px;
+}
+.preset-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0f1115;
+  border: 1px solid #2c3142;
+  color: #c2c8d2;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.preset-chip:hover {
+  border-color: #4a5170;
+  color: #e6e8ec;
+}
+.preset-chip.active {
+  border-color: #6366f1;
+  color: #ffffff;
+  background: #1d2233;
+}
 .legend {
   display: flex;
   gap: 14px;
