@@ -94,7 +94,7 @@ button.danger:hover { background: #85293a; }
 .timeline-wrap { margin-bottom: 18px; }
 .timeline-track {
   position: relative;
-  height: 70px;
+  height: 100px;
   background: #1a1d27;
   border: 1px solid #2c3142;
   border-radius: 8px;
@@ -138,10 +138,10 @@ button.danger:hover { background: #85293a; }
   top: 0;
   height: 100%;
   width: 2px;
-  background: #ff3b3b;
+  background: #000000;
   pointer-events: none;
   z-index: 4;
-  box-shadow: 0 0 6px rgba(255, 59, 59, 0.8);
+  box-shadow: 0 0 6px rgba(0,0,0, 0.8);
 }
 .axis {
   position: relative;
