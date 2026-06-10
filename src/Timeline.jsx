@@ -12,6 +12,7 @@ export default function Timeline({
   onSeek,
   onSelect,
   onMoveBoundary,
+  onEndBoundaryDrag,
 }) {
   const trackRef = useRef(null)
   const dragRef = useRef(null)
@@ -60,6 +61,7 @@ export default function Timeline({
     }
     const up = () => {
       dragRef.current = null
+      onEndBoundaryDrag && onEndBoundaryDrag()
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', up)
     }

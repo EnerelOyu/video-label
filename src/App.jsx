@@ -15,7 +15,7 @@ export default function App() {
   const [videoName, setVideoName] = useState('')
   const [videoDuration, setVideoDuration] = useState(0)
 
-  const [segments, setSegments] = useState([])
+  const [segments, setSegments, history] = useHistory([])
   const [jsonName, setJsonName] = useState('labels.json')
   const [extraLabels, setExtraLabels] = useState([])
 
@@ -57,6 +57,24 @@ export default function App() {
     return () => cancelAnimationFrame(rafRef.current)
   }, [playing])
 
+  // ---- keyboard undo/redo ----
+  useEffect(() => {
+    const onKey = (e) => {
+      const mod = e.ctrlKey || e.metaKey
+      if (!mod) return
+      const key = e.key.toLowerCase()
+      if (key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        history.undo()
+      } else if ((key === 'z' && e.shiftKey) || key === 'y') {
+        e.preventDefault()
+        history.redo()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [history.undo, history.redo])
+
   // ---- file handlers ----
   const onVideoFile = (file) => {
     if (!file) return
@@ -70,7 +88,7 @@ export default function App() {
     try {
       const text = await file.text()
       const segs = parseSegments(JSON.parse(text))
-      setSegments(segs)
+      history.reset(segs)
       setJsonName(file.name)
       setSelectedIndex(segs.length ? 0 : -1)
       setError('')
@@ -93,8 +111,13 @@ export default function App() {
       next[i].end_time = round(t)
       next[i + 1].start_time = round(t)
       return next
-    })
-  }, [])
+    }, 'drag-boundary-' + i)
+  }, [setSegments])
+
+  // Called when a boundary drag ends so the next drag starts a fresh undo step.
+  const endBoundaryDrag = useCallback(() => {
+    setSegments((prev) => prev, null)
+  }, [setSegments])
 
   const changeLabel = (idx, label) => {
     setSegments((prev) => prev.map((s, i) => (i === idx ? { ...s, label } : s)))
@@ -212,6 +235,20 @@ export default function App() {
             />
           </label>
           <button
+            onClick={history.undo}
+            disabled={!history.canUndo}
+            title="Буцаах (Ctrl+Z)"
+          >
+            ↩ өмнөх
+          </button>
+          <button
+            onClick={history.redo}
+            disabled={!history.canRedo}
+            title="Дахин хийх (Ctrl+Y)"
+          >
+            ↪ дараах
+          </button>
+          <button
             className="download-btn"
             onClick={download}
             disabled={!segments.length}
@@ -265,6 +302,7 @@ export default function App() {
           onSeek={seek}
           onSelect={setSelectedIndex}
           onMoveBoundary={moveBoundary}
+          onEndBoundaryDrag={endBoundaryDrag}
         />
       )}
 
@@ -372,4 +410,54 @@ function clamp(v, min, max) {
 }
 function round(v) {
   return Math.round(v * 100) / 100
+}
+
+// State wrapper with undo/redo history. `set` accepts a value or updater
+// function (like useState) and records the previous value for undo.
+function useHistory(initial) {
+  const [hist, setHist] = useState({ past: [], present: initial, future: [] })
+  const lastTag = useRef(null)
+
+  // `tag` coalesces consecutive updates into a single undo step (e.g. a drag):
+  // same tag as the previous update replaces the present without a new entry.
+  const set = useCallback((updater, tag) => {
+    const coalesce = tag != null && tag === lastTag.current
+    lastTag.current = tag ?? null
+    setHist((h) => {
+      const next = typeof updater === 'function' ? updater(h.present) : updater
+      if (next === h.present) return h
+      if (coalesce) return { ...h, present: next, future: [] }
+      return { past: [...h.past, h.present], present: next, future: [] }
+    })
+  }, [])
+
+  const undo = useCallback(() => {
+    lastTag.current = null
+    setHist((h) => {
+      if (!h.past.length) return h
+      const prev = h.past[h.past.length - 1]
+      return { past: h.past.slice(0, -1), present: prev, future: [h.present, ...h.future] }
+    })
+  }, [])
+
+  const redo = useCallback(() => {
+    lastTag.current = null
+    setHist((h) => {
+      if (!h.future.length) return h
+      const next = h.future[0]
+      return { past: [...h.past, h.present], present: next, future: h.future.slice(1) }
+    })
+  }, [])
+
+  // Replace state without recording history (e.g. loading a new file).
+  const reset = useCallback((value) => {
+    lastTag.current = null
+    setHist({ past: [], present: value, future: [] })
+  }, [])
+
+  return [
+    hist.present,
+    set,
+    { undo, redo, reset, canUndo: hist.past.length > 0, canRedo: hist.future.length > 0 },
+  ]
 }
