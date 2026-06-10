@@ -1,0 +1,11 @@
+[
+  { "start_time": 0.0, "end_time": 138.0, "label": "advertisements" },
+  { "start_time": 138.0, "end_time": 160.0, "label": "movies" },
+  { "start_time": 160.0, "end_time": 214.0, "label": "advertisements" },
+  { "start_time": 214.0, "end_time": 300.0, "label": "arts_culture" },
+  { "start_time": 300.0, "end_time": 2100.0, "label": "news" },
+  { "start_time": 2100.0, "end_time": 2400.0, "label": "arts_culture" },
+  { "start_time": 2400.0, "end_time": 2700.0, "label": "news" },
+  { "start_time": 2700.0, "end_time": 3000.0, "label": "advertisements" },
+  { "start_time": 3000.0, "end_time": 3600.0, "label": "news" }
+]
