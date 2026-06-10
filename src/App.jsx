@@ -359,7 +359,7 @@ export default function App() {
                 <option key={l} value={l} />
               ))}
             </datalist>
-            <button onClick={addLabel}>+ Label нэмэх</button>
+            <button onClick={addLabel}>+ Label rename</button>
             <button onClick={() => seek(sel.start_time)}>Segment-ын эхэнд очих</button>
             <button onClick={splitAtPlayhead}>Segemnt-ыг хуваах</button>
             <button className="danger" onClick={() => deleteSegment(selectedIndex)}>
