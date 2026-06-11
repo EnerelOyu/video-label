@@ -75,6 +75,24 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [history.undo, history.redo])
 
+  // ---- keyboard seek: сумаар 1с, Shift+сумаар 5с гүйлгэх ----
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+      // input/textarea дотор бичиж байх үед хөндлдөхгүй
+      const tag = e.target.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+      const v = videoRef.current
+      if (!v) return
+      e.preventDefault()
+      const step = e.shiftKey ? 5 : 1
+      const delta = e.key === 'ArrowLeft' ? -step : step
+      seek(clamp(v.currentTime + delta, 0, totalDuration))
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [seek, totalDuration])
+
   // ---- file handlers ----
   const onVideoFile = (file) => {
     if (!file) return
