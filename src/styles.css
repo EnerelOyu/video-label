@@ -89,6 +89,7 @@ button.danger:hover { background: #85293a; }
   flex-wrap: wrap;
 }
 .time-readout { font-variant-numeric: tabular-nums; color: #9aa3b2; }
+.seg-nav-hint { font-size: 0.78rem; color: #6b7280; letter-spacing: 0.01em; }
 
 /* timeline */
 .timeline-wrap { margin-bottom: 18px; }

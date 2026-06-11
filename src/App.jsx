@@ -104,6 +104,27 @@ export default function App() {
     setCurrentTime(t)
   }, [])
 
+  // ---- [ / ] товчоор segment хооронд шилжих ----
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== '[' && e.key !== ']') return
+      const tag = e.target.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+      if (!segments.length) return
+      e.preventDefault()
+      setSelectedIndex((i) => {
+        const cur = i < 0 ? 0 : i
+        const next = e.key === ']'
+          ? Math.min(cur + 1, segments.length - 1)
+          : Math.max(cur - 1, 0)
+        seek(segments[next].start_time)
+        return next
+      })
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [segments, seek])
+
   // ---- keyboard seek: сумаар 1с, Shift+сумаар 5с гүйлгэх ----
   useEffect(() => {
     const onKey = (e) => {
@@ -299,6 +320,7 @@ export default function App() {
         <button onClick={togglePlay} disabled={!videoUrl}>
           {playing ? '⏸ Зогсоох' : '▶ Тоглуулах'}
         </button>
+        <span className="seg-nav-hint">[ өмнөх segment &nbsp;|&nbsp; ] дараагийн segment</span>
         <span className="time-readout">
           {fmtTime(currentTime)} / {fmtTime(totalDuration)}
         </span>
